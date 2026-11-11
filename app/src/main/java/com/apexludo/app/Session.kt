@@ -87,10 +87,33 @@ class Session(
 
     fun resume() {
         paused = false
-        if (phase == Phase.AWAIT_ROLL || phase == Phase.AWAIT_MOVE) {
-            if (isAuto(state.turn)) scheduleAuto(650L)
-            else startTimer()
+        when (phase) {
+            Phase.AWAIT_ROLL, Phase.AWAIT_MOVE -> {
+                if (isAuto(state.turn)) scheduleAuto(650L) else startTimer()
+            }
+            Phase.ANIMATING -> {
+                // The move was already applied to the state before the animation started,
+                // so the board is consistent: just pick the turn loop back up.
+                view?.stopAnimations()
+                legalMoves = emptyList()
+                view?.highlighted = emptyList()
+                beginTurn()
+            }
+            Phase.ROLLING -> {
+                // A roll was in flight when the player paused. Resume from the moves it
+                // produced rather than silently eating the turn.
+                view?.stopAnimations()
+                if (legalMoves.isNotEmpty()) {
+                    phase = Phase.AWAIT_MOVE
+                    view?.highlighted = legalMoves.map { it.token }.distinct()
+                    if (isAuto(state.turn)) scheduleBotMove() else startTimer()
+                } else {
+                    beginTurn()
+                }
+            }
+            else -> { }
         }
+        view?.invalidate()
     }
 
     // ---------------------------------------------------------------- helpers
