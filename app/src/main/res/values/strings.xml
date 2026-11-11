@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Apex Ludo</string>
+    <string name="tagline">Race. Capture. Conquer.</string>
+    <string name="version_label">v1.1 (beta)</string>
+
+    <!-- Home -->
+    <string name="play_quick">Quick Match</string>
+    <string name="play_pass">Pass &amp; Play</string>
+    <string name="custom_rules">Custom Rules</string>
+    <string name="ai_profiles">AI Profiles</string>
+    <string name="stats">Statistics</string>
+    <string name="settings">Settings</string>
+    <string name="tutorial">How to Play</string>
+    <string name="replay_log">Match Log</string>
+    <string name="about">About</string>
+    <string name="resume">Resume</string>
+    <string name="restart">Restart</string>
+    <string name="quit_match">Quit Match</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
+    <string name="start_match">Start Match</string>
+    <string name="rematch">Rematch</string>
+    <string name="home">Home</string>
+    <string name="continue_label">Continue</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="reset">Reset</string>
+
+    <!-- Seats -->
+    <string name="seats_title">Players</string>
+    <string name="players_count">Players</string>
+    <string name="seat_human">Human</string>
+    <string name="seat_bot">Bot</string>
+    <string name="seat_afk">AFK Delegate</string>
+    <string name="bot_style">Bot style</string>
+    <string name="rules_preset">Rule preset</string>
+    <string name="preset_classic">Classic</string>
+    <string name="preset_quick">Quick</string>
+    <string name="preset_battle">Battle</string>
+    <string name="preset_peaceful">Peaceful</string>
+    <string name="preset_custom">Custom</string>
+
+    <!-- Game -->
+    <string name="roll_dice">Roll</string>
+    <string name="tap_token">Tap a glowing token</string>
+    <string name="your_turn">Your turn</string>
+    <string name="bot_turn">Thinking…</string>
+    <string name="turn_of">%1$s\'s turn</string>
+    <string name="player_red">Red</string>
+    <string name="player_green">Green</string>
+    <string name="player_yellow">Yellow</string>
+    <string name="player_blue">Blue</string>
+    <string name="you">You</string>
+    <string name="bot">Bot</string>
+    <string name="rolled">%1$s rolled %2$d</string>
+    <string name="no_moves">No legal move — turn passes</string>
+    <string name="captured">%1$s captured %2$s</string>
+    <string name="token_home">%1$s sent a token home</string>
+    <string name="six_again">Six! Roll again</string>
+    <string name="triple_six">Three sixes — turn forfeited</string>
+    <string name="match_over">Match Over</string>
+    <string name="paused">Paused</string>
+    <string name="music_volume">Music volume</string>
+    <string name="winner_is">%1$s wins!</string>
+    <string name="rank_first">1st</string>
+    <string name="rank_second">2nd</string>
+    <string name="rank_third">3rd</string>
+    <string name="rank_fourth">4th</string>
+    <string name="turn_timer">Time</string>
+    <string name="auto_play">Auto-play</string>
+
+    <!-- Settings -->
+    <string name="sound">Sound</string>
+    <string name="music">Music</string>
+    <string name="sfx">Effects</string>
+    <string name="haptics">Haptics</string>
+    <string name="battery_saver">Battery saver (30 fps)</string>
+    <string name="particles">Particle density</string>
+    <string name="anim_speed">Animation speed</string>
+    <string name="high_contrast">High-contrast colours</string>
+    <string name="theme">Board theme</string>
+    <string name="board_skin">Board skin</string>
+    <string name="token_skin">Token style</string>
+    <string name="language">Language</string>
+    <string name="lang_system">System default</string>
+    <string name="lang_en">English</string>
+    <string name="lang_hi">हिन्दी</string>
+    <string name="assist">Catch-up assist (humans only)</string>
+    <string name="show_fps">Performance overlay</string>
+    <string name="ai_budget">AI thinking depth</string>
+    <string name="auto_roll">Auto-roll on turn</string>
+    <string name="confirm_quit">Quit this match? Progress will be lost.</string>
+    <string name="settings_saved">Settings saved</string>
+    <string name="theme_day">Daylight</string>
+    <string name="theme_night">Midnight</string>
+    <string name="theme_cyber">Cyberpunk</string>
+    <string name="theme_royal">Royal Gold</string>
+    <string name="theme_forest">Emerald</string>
+    <string name="theme_contrast">High Contrast</string>
+    <string name="skin_classic">Classic</string>
+    <string name="skin_neon">Neon</string>
+    <string name="skin_wood">Walnut</string>
+    <string name="skin_marble">Marble</string>
+    <string name="token_pawn">Pawn</string>
+    <string name="token_dragon">Dragon</string>
+    <string name="token_car">Racer</string>
+    <string name="token_gem">Gem</string>
+    <string name="low">Low</string>
+    <string name="medium">Medium</string>
+    <string name="high">High</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+
+    <!-- Rules -->
+    <string name="rules_title">Custom Rules</string>
+    <string name="rule_blockades">Blockades (two tokens block a cell)</string>
+    <string name="rule_block_pass">Blockades stop passage</string>
+    <string name="rule_three_six">Three sixes forfeit the turn</string>
+    <string name="rule_six_unlock">Only a six leaves the yard</string>
+    <string name="rule_six_extra">Six grants an extra roll</string>
+    <string name="rule_capture_extra">Capture grants an extra roll</string>
+    <string name="rule_home_extra">Home entry grants an extra roll</string>
+    <string name="rule_exact_home">Exact roll needed to enter home</string>
+    <string name="rule_safe_stars">Star cells are safe</string>
+    <string name="rule_safe_start">Start cells are safe</string>
+    <string name="rule_timer">Turn timer</string>
+    <string name="rule_tokens">Tokens per player</string>
+    <string name="rule_battle">Battle mode (capture after midpoint)</string>
+    <string name="seconds">%1$d s</string>
+    <string name="timer_off">No timer</string>
+
+    <!-- Stats -->
+    <string name="stats_title">Statistics</string>
+    <string name="stat_matches">Matches played</string>
+    <string name="stat_wins">Wins</string>
+    <string name="stat_rate">Win rate</string>
+    <string name="stat_captures">Captures</string>
+    <string name="stat_homes">Tokens home</string>
+    <string name="stat_streak">Best streak</string>
+    <string name="stat_dice">Dice distribution</string>
+    <string name="stat_reset">Reset statistics</string>
+    <string name="stat_reset_done">Statistics reset</string>
+    <string name="stat_empty">No matches yet — play one!</string>
+
+    <!-- Daily -->
+    <string name="daily_streak">Day streak</string>
+    <string name="daily_claim">Claim daily reward</string>
+    <string name="daily_claimed">Claimed today</string>
+    <string name="coins">Coins</string>
+    <string name="daily_reward">%1$d coins collected</string>
+
+    <!-- AI -->
+    <string name="ai_title">AI Profiles</string>
+    <string name="ai_balanced">Balanced</string>
+    <string name="ai_tactical">Tactical</string>
+    <string name="ai_aggressive">Aggressive</string>
+    <string name="ai_defensive">Defensive</string>
+    <string name="ai_adaptive">Adaptive</string>
+    <string name="ai_grandmaster">Grandmaster</string>
+    <string name="ai_desc_balanced">Even mix of attack and defence. A great first opponent.</string>
+    <string name="ai_desc_tactical">Reads the board, protects tokens, strikes when it pays.</string>
+    <string name="ai_desc_aggressive">Hunts your tokens relentlessly. Punishes loose play.</string>
+    <string name="ai_desc_defensive">Builds blockades and refuses to leave tokens exposed.</string>
+    <string name="ai_desc_adaptive">Runs short Monte-Carlo playouts on your phone\'s CPU.</string>
+    <string name="ai_desc_grandmaster">The deepest search in the app. Expect a real fight.</string>
+    <string name="ai_offline">Runs fully on-device — no internet, no accounts, no ads.</string>
+    <string name="ai_thinking">%1$d ms average think time</string>
+
+    <!-- Tutorial -->
+    <string name="tut_title">How to Play</string>
+    <string name="tut_1_title">Roll a six</string>
+    <string name="tut_1_body">Only a six brings a token out of the yard onto your coloured start square.</string>
+    <string name="tut_2_title">Move and capture</string>
+    <string name="tut_2_body">Tap a glowing token to move it. Landing on an opponent dissolves their token into powder and reforms it back in the yard.</string>
+    <string name="tut_3_title">Stay safe</string>
+    <string name="tut_3_body">Star cells and coloured start cells can never be captured. Two of your tokens on one cell form a blockade.</string>
+    <string name="tut_4_title">Bring all four home</string>
+    <string name="tut_4_body">The exact number is needed to enter home. The first player to bring all four tokens home wins.</string>
+
+    <!-- About -->
+    <string name="about_title">About Apex Ludo</string>
+    <string name="about_body">Apex Ludo v1.1 (beta) — a clean-room, offline, ad-free Ludo built from scratch.\n\n• No ads, no trackers, no network permission\n• Six on-device bot personalities\n• Fully configurable rules\n• Custom 60 fps canvas renderer with battery saver\n\nThis is a beta build. If anything glitches, the app saves a log you can share.</string>
+    <string name="about_credits">Engine, art and AI built in-house. No third-party assets.</string>
+
+    <!-- Misc -->
+    <string name="loading">Loading board…</string>
+    <string name="perf_label">FPS %1$d · %2$d ms</string>
+    <string name="event_1">Welcome to Apex Ludo 1.1 beta</string>
+    <string name="event_2">Tip: two tokens on one cell form a blockade</string>
+    <string name="event_3">Tip: star cells can never be captured</string>
+    <string name="event_4">Tip: tap the dice to roll</string>
+    <string name="event_5">Six bot personalities, zero internet</string>
+    <string name="crash_saved">A crash report was saved to app storage</string>
+    <string name="afk_on">%1$s is now on auto-pilot</string>
+    <string name="afk_off">%1$s is back in control</string>
+</resources>

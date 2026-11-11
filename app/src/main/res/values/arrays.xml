@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ticker">
+        <item>@string/event_1</item>
+        <item>@string/event_2</item>
+        <item>@string/event_3</item>
+        <item>@string/event_4</item>
+        <item>@string/event_5</item>
+    </string-array>
+</resources>
