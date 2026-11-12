@@ -24,7 +24,8 @@ class Session(
     val rules: RuleSet,
     private val seats: IntArray,
     private val profiles: Array<AiProfile>,
-    val seed: Long
+    val seed: Long,
+    val spectator: Boolean = false
 ) {
 
     enum class Phase { IDLE, AWAIT_ROLL, ROLLING, AWAIT_MOVE, ANIMATING, OVER }
@@ -60,7 +61,7 @@ class Session(
         engine = pair.second
         engine.dice.assistEnabled = host.prefs().assist
         for (i in 0 until state.playerCount) {
-            afk[i] = false
+            afk[i] = spectator
         }
     }
 
@@ -191,7 +192,8 @@ class Session(
         view?.invalidate()
         if (isAuto(state.turn)) {
             timerRunning = false
-            scheduleAuto((profiles.getOrNull(state.turn)?.thinkMs ?: 600).toLong())
+            val base = if (spectator) 260 else (profiles.getOrNull(state.turn)?.thinkMs ?: 600)
+            scheduleAuto(base.toLong())
         } else {
             startTimer()
             if (host.prefs().autoRoll) scheduleAuto(900L)
@@ -390,6 +392,7 @@ class Session(
         }
         telemetry.record(state, outcome)
         if (outcome.captured.isNotEmpty()) {
+            botReaction()
             host.sound().capture()
             host.haptics().capture()
             flash(host.getString(R.string.captured, playerName(move.player),
@@ -455,6 +458,22 @@ class Session(
         )
         if (afk[player] && state.turn == player && phase == Phase.AWAIT_ROLL) scheduleAuto(400L)
         view?.invalidate()
+    }
+
+    /** Quick-chat bubble; harmless in single player, ready for networked play. */
+    fun emote(text: String) {
+        view?.showEmote(text, state.colorOf(state.turn))
+        host.sound().play("sfx_open", 0.55f)
+        host.haptics().tap()
+    }
+
+    /** A bot occasionally reacts after a big moment, so the board feels alive. */
+    private fun botReaction() {
+        if (!spectator && !isAuto(state.turn)) return
+        if (Math.random() > 0.22) return
+        val lines = host.resources.getStringArray(R.array.emotes)
+        if (lines.isEmpty()) return
+        view?.showEmote(lines[(Math.random() * lines.size).toInt()], state.colorOf(state.turn))
     }
 
     fun logText(): String = telemetry.entries().joinToString("\n") { it.describe() }

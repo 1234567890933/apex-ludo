@@ -23,6 +23,20 @@ class SoundEngine(ctx: Context) {
     private val ids = HashMap<String, Int>()
     private var loaded = false
 
+    /** 0 = menu bed, 1 = in-match bed. */
+    var trackIndex = 0
+        private set
+    private val currentTrack: Int
+        get() = if (trackIndex == 1) R.raw.bgm_game else R.raw.bgm_menu
+
+    fun switchTrack(index: Int) {
+        if (index == trackIndex) return
+        trackIndex = index
+        try { music?.release() } catch (t: Throwable) { }
+        music = null
+        startMusic()
+    }
+
     var masterOn = true
     var sfxVolume = 0.85f
     var musicVolume = 0.45f
@@ -94,7 +108,7 @@ class SoundEngine(ctx: Context) {
         if (!musicOn || !masterOn) return
         try {
             if (music == null) {
-                val resId = R.raw.bgm_loop
+                val resId = currentTrack
                 music = MediaPlayer.create(app, resId)?.apply {
                     isLooping = true
                     setVolume(musicVolume, musicVolume)

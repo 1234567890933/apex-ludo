@@ -231,80 +231,267 @@ class MainActivity : Activity() {
 
     // ---------------------------------------------------------------- home
     private fun showMenu() {
+        audio.switchTrack(0)
         val theme = currentTheme()
         val c = card()
-        c.addView(Ui.title(this, theme, getString(R.string.app_name), 30f))
-        val sub = Ui.row(this)
-        sub.addView(Ui.body(this, theme, getString(R.string.tagline), 13.5f, dim = true))
-        sub.addView(Ui.space(this))
-        sub.addView(Ui.chip(this, theme, getString(R.string.version_label), theme.accent))
-        c.addView(sub)
+        val av = Avatars.byId(prefsStore.avatarId)
+
+        // --- profile strip
+        val strip = Ui.row(this)
+        val disc = android.widget.FrameLayout(this)
+        val dSize = Ui.dp(this, 48f)
+        disc.background = android.graphics.drawable.GradientDrawable().apply {
+            shape = android.graphics.drawable.GradientDrawable.OVAL
+            setColor(Ui.withAlpha(av.color, 60))
+            setStroke(Ui.dp(this@MainActivity, 1.5f), Ui.withAlpha(av.color, 200))
+        }
+        disc.addView(Ui.glyph(this, av.icon, av.color, 24f),
+            android.widget.FrameLayout.LayoutParams(dSize, dSize).apply { gravity = Gravity.CENTER })
+        val dlp = LinearLayout.LayoutParams(dSize, dSize)
+        dlp.rightMargin = Ui.dp(this, 10f)
+        strip.addView(disc, dlp)
+
+        val who = Ui.column(this)
+        who.addView(Ui.title(this, theme, getString(R.string.app_name), 21f))
+        val titleText = getString(Titles.ALL[prefsStore.titleId.coerceIn(0, Titles.ALL.size - 1)])
+        who.addView(Ui.body(this, theme, titleText + " · " + getString(R.string.version_label), 11.5f, dim = true))
+        strip.addView(who, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        strip.addView(Ui.chip(this, theme, "◈ " + prefsStore.coins, theme.playerColors[2]))
+        c.addView(strip)
         c.addView(Ui.spacer(this, 10f))
 
-        val stats = Ui.row(this)
-        stats.addView(Ui.chip(this, theme, getString(R.string.coins) + ": " + prefsStore.coins, theme.playerColors[2]))
-        stats.addView(Ui.spacer(this, 0f))
-        stats.addView(View(this).also { it.layoutParams = LinearLayout.LayoutParams(Ui.dp(this, 8f), 1) })
-        stats.addView(Ui.chip(this, theme, getString(R.string.daily_streak) + ": " + prefsStore.streak, theme.playerColors[1]))
-        c.addView(stats)
-        c.addView(Ui.spacer(this, 12f))
-
-        c.addView(Ui.button(this, theme, getString(R.string.play_quick), primary = true) {
-            audio.tap(); pendingSetupPassAndPlay = false; showSetup(false)
-        })
-        c.addView(Ui.spacer(this, 8f))
-        c.addView(Ui.button(this, theme, getString(R.string.play_pass)) {
-            audio.tap(); pendingSetupPassAndPlay = true; showSetup(true)
+        // --- primary action
+        c.addView(Ui.iconCard(this, theme, Icons.PLAY, getString(R.string.play_quick),
+            getString(R.string.quick_sub), theme.accent) {
+            audio.tap(); showSetup(false)
         })
         c.addView(Ui.spacer(this, 8f))
 
-        val grid1 = Ui.row(this)
-        grid1.addView(Ui.button(this, theme, getString(R.string.custom_rules)) { audio.tap(); showRules() },
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        grid1.addView(View(this).also { it.layoutParams = LinearLayout.LayoutParams(Ui.dp(this, 8f), 1) })
-        grid1.addView(Ui.button(this, theme, getString(R.string.ai_profiles)) { audio.tap(); showAiProfiles() },
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        c.addView(grid1)
-        c.addView(Ui.spacer(this, 8f))
+        fun twoCards(l: Int, lt: String, ls: String?, la: () -> Unit,
+                     r: Int, rt: String, rs: String?, ra: () -> Unit) {
+            val row = Ui.row(this)
+            val left = Ui.iconCard(this, theme, l, lt, ls, theme.accent) { la() }
+            val right = Ui.iconCard(this, theme, r, rt, rs, theme.playerColors[1]) { ra() }
+            row.addView(left, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                rightMargin = Ui.dp(this@MainActivity, 8f)
+            })
+            row.addView(right, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            c.addView(row)
+            c.addView(Ui.spacer(this, 8f))
+        }
 
-        val grid2 = Ui.row(this)
-        grid2.addView(Ui.button(this, theme, getString(R.string.stats)) { audio.tap(); showStats() },
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        grid2.addView(View(this).also { it.layoutParams = LinearLayout.LayoutParams(Ui.dp(this, 8f), 1) })
-        grid2.addView(Ui.button(this, theme, getString(R.string.settings)) { audio.tap(); showSettings() },
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        c.addView(grid2)
-        c.addView(Ui.spacer(this, 8f))
-
-        val grid3 = Ui.row(this)
-        grid3.addView(Ui.button(this, theme, getString(R.string.tutorial)) { audio.tap(); tutorialPage = 0; showTutorial() },
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        grid3.addView(View(this).also { it.layoutParams = LinearLayout.LayoutParams(Ui.dp(this, 8f), 1) })
-        grid3.addView(Ui.button(this, theme, getString(R.string.about)) { audio.tap(); showAbout() },
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        c.addView(grid3)
+        twoCards(Icons.USERS, getString(R.string.play_pass), getString(R.string.pass_sub),
+            { audio.tap(); showSetup(true) },
+            Icons.EYE, getString(R.string.watch_bots), getString(R.string.watch_sub),
+            { audio.tap(); startSpectator() })
+        twoCards(Icons.SHOP, getString(R.string.shop_title), null,
+            { audio.tap(); showShop() },
+            Icons.CROWN, getString(R.string.profile_title), null,
+            { audio.tap(); showProfile() })
+        twoCards(Icons.SLIDERS, getString(R.string.custom_rules), null,
+            { audio.tap(); showRules() },
+            Icons.ROBOT, getString(R.string.ai_profiles), null,
+            { audio.tap(); showAiProfiles() })
+        twoCards(Icons.CHART, getString(R.string.stats), null,
+            { audio.tap(); showStats() },
+            Icons.GEAR, getString(R.string.settings), null,
+            { audio.tap(); showSettings() })
+        twoCards(Icons.BOOK, getString(R.string.tutorial), null,
+            { audio.tap(); tutorialPage = 0; showTutorial() },
+            Icons.CHAT, getString(R.string.replay_log), null,
+            { audio.tap(); showLog() })
 
         if (session != null && !session!!.matchFinished) {
-            c.addView(Ui.spacer(this, 10f))
             c.addView(Ui.button(this, theme, getString(R.string.resume), primary = true) {
                 audio.tap(); closeOverlay(); session?.resume()
             })
+            c.addView(Ui.spacer(this, 8f))
         }
 
-        c.addView(Ui.spacer(this, 10f))
-        val daily = Ui.row(this)
         val canClaim = canClaimDaily()
-        daily.addView(Ui.button(this, theme,
+        val dailyRow = Ui.row(this)
+        dailyRow.addView(Ui.button(this, theme,
             if (canClaim) getString(R.string.daily_claim) else getString(R.string.daily_claimed)) {
             if (canClaim) claimDaily() else toast(getString(R.string.daily_claimed))
         }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        daily.addView(View(this).also { it.layoutParams = LinearLayout.LayoutParams(Ui.dp(this, 8f), 1) })
-        daily.addView(Ui.button(this, theme, getString(R.string.replay_log)) { audio.tap(); showLog() },
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        c.addView(daily)
+        dailyRow.addView(View(this).also { it.layoutParams = LinearLayout.LayoutParams(Ui.dp(this, 8f), 1) })
+        dailyRow.addView(Ui.chip(this, theme,
+            getString(R.string.daily_streak) + " " + prefsStore.streak, theme.playerColors[1]))
+        c.addView(dailyRow)
+
+        c.addView(Ui.spacer(this, 8f))
+        c.addView(Ui.button(this, theme, getString(R.string.about)) { audio.tap(); showAbout() })
 
         openOverlay(scrollCard(c), dismissible = session == null)
     }
+
+    // ---------------------------------------------------------------- shop
+    private data class ShopItem(val id: String, val labelRes: Int, val price: Int, val icon: Int)
+
+    private fun showShop() {
+        val theme = currentTheme()
+        val c = card()
+        header(c, getString(R.string.shop_title), "◈ " + prefsStore.coins)
+        c.addView(Ui.body(this, theme, getString(R.string.ai_offline), 12f, dim = true))
+        c.addView(Ui.spacer(this, 8f))
+
+        fun section(titleRes: Int, items: List<ShopItem>, current: String, apply: (String) -> Unit) {
+            c.addView(Ui.divider(this, theme))
+            c.addView(Ui.body(this, theme, getString(titleRes), 14f))
+            for (item in items) {
+                val owned = prefsStore.owns(item.id)
+                val equipped = current == item.id
+                val row = Ui.row(this)
+                row.setPadding(0, Ui.dp(this, 4f), 0, Ui.dp(this, 4f))
+                row.addView(Ui.glyph(this, item.icon, theme.playerColors[1], 18f),
+                    LinearLayout.LayoutParams(Ui.dp(this, 26f), Ui.dp(this, 26f)))
+                row.addView(Ui.body(this, theme, getString(item.labelRes), 14f),
+                    LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+                val b = Ui.button(this, theme,
+                    when {
+                        equipped -> getString(R.string.equipped)
+                        owned -> getString(R.string.shop_owned)
+                        else -> "◈ " + item.price
+                    }) {
+                    if (equipped) {
+                        toast(getString(R.string.equipped))
+                    } else if (owned) {
+                        apply(item.id); audio.tap(); showShop()
+                    } else if (prefsStore.coins >= item.price) {
+                        prefsStore.coins = prefsStore.coins - item.price
+                        prefsStore.unlock(item.id)
+                        apply(item.id)
+                        audio.home()
+                        toast(getString(R.string.shop_bought, getString(item.labelRes)))
+                        showShop()
+                    } else {
+                        audio.close()
+                        toast(getString(R.string.shop_not_enough))
+                    }
+                }
+                row.addView(b)
+                c.addView(row)
+            }
+        }
+
+        section(R.string.theme, listOf(
+            ShopItem("theme:day", R.string.theme_day, 0, Icons.PALETTE),
+            ShopItem("theme:night", R.string.theme_night, 0, Icons.PALETTE),
+            ShopItem("theme:forest", R.string.theme_forest, 250, Icons.PALETTE),
+            ShopItem("theme:royal", R.string.theme_royal, 400, Icons.PALETTE),
+            ShopItem("theme:cyber", R.string.theme_cyber, 600, Icons.PALETTE),
+            ShopItem("theme:contrast", R.string.theme_contrast, 0, Icons.PALETTE)
+        ), "theme:" + prefsStore.themeId) { prefsStore.themeId = it.substringAfter(":"); applyVisualPrefs() }
+
+        section(R.string.board_skin, listOf(
+            ShopItem("board:classic", R.string.skin_classic, 0, Icons.DICE),
+            ShopItem("board:marble", R.string.skin_marble, 200, Icons.DICE),
+            ShopItem("board:wood", R.string.skin_wood, 250, Icons.DICE),
+            ShopItem("board:neon", R.string.skin_neon, 400, Icons.DICE)
+        ), "board:" + prefsStore.boardSkin) { prefsStore.boardSkin = it.substringAfter(":"); applyVisualPrefs() }
+
+        section(R.string.token_skin, listOf(
+            ShopItem("token:pawn", R.string.token_pawn, 0, Icons.STAR),
+            ShopItem("token:gem", R.string.token_gem, 150, Icons.STAR),
+            ShopItem("token:dragon", R.string.token_dragon, 250, Icons.STAR),
+            ShopItem("token:car", R.string.token_car, 300, Icons.STAR)
+        ), "token:" + prefsStore.tokenSkin) { prefsStore.tokenSkin = it.substringAfter(":"); applyVisualPrefs() }
+
+        c.addView(Ui.divider(this, theme))
+        val shieldRow = Ui.row(this)
+        shieldRow.setPadding(0, Ui.dp(this, 6f), 0, Ui.dp(this, 6f))
+        shieldRow.addView(Ui.glyph(this, Icons.SHIELD, theme.playerColors[1], 20f),
+            LinearLayout.LayoutParams(Ui.dp(this, 28f), Ui.dp(this, 28f)))
+        val shCol = Ui.column(this)
+        shCol.addView(Ui.body(this, theme, getString(R.string.streak_shield) + "  ×" + prefsStore.shields, 14f))
+        shCol.addView(Ui.body(this, theme, getString(R.string.shield_desc), 11.5f, dim = true))
+        shieldRow.addView(shCol, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        shieldRow.addView(Ui.button(this, theme, "◈ 100") {
+            if (prefsStore.coins >= 100) {
+                prefsStore.coins = prefsStore.coins - 100
+                prefsStore.shields = prefsStore.shields + 1
+                audio.home()
+                showShop()
+            } else {
+                toast(getString(R.string.shop_not_enough))
+            }
+        })
+        c.addView(shieldRow)
+
+        c.addView(Ui.spacer(this, 10f))
+        c.addView(Ui.button(this, theme, getString(R.string.back), primary = true) {
+            audio.tap(); showMenu()
+        })
+        openOverlay(scrollCard(c))
+    }
+
+    // ---------------------------------------------------------------- profile
+    private fun showProfile() {
+        val theme = currentTheme()
+        val c = card()
+        header(c, getString(R.string.profile_title))
+        c.addView(Ui.body(this, theme, getString(R.string.avatar_label), 14f))
+        Avatars.ALL.chunked(3).forEach { group ->
+            val row = Ui.row(this)
+            for (a in group) {
+                val selected = prefsStore.avatarId == a.id
+                val cell = android.widget.FrameLayout(this)
+                val size = Ui.dp(this, 62f)
+                cell.background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(Ui.withAlpha(a.color, if (selected) 90 else 34))
+                    setStroke(Ui.dp(this@MainActivity, if (selected) 2.4f else 1.2f), Ui.withAlpha(a.color, 200))
+                }
+                cell.addView(Ui.glyph(this, a.icon, a.color, 30f),
+                    android.widget.FrameLayout.LayoutParams(size, size).apply { gravity = Gravity.CENTER })
+                cell.setOnClickListener {
+                    prefsStore.avatarId = a.id
+                    audio.tap()
+                    showProfile()
+                }
+                val lp = LinearLayout.LayoutParams(size, size)
+                lp.rightMargin = Ui.dp(this, 10f)
+                row.addView(cell, lp)
+            }
+            c.addView(row)
+            c.addView(Ui.spacer(this, 6f))
+        }
+
+        c.addView(Ui.divider(this, theme))
+        c.addView(Ui.body(this, theme, getString(R.string.title_label), 14f))
+        for ((i, res) in Titles.ALL.withIndex()) {
+            val row = Ui.row(this)
+            row.setPadding(0, Ui.dp(this, 3f), 0, Ui.dp(this, 3f))
+            row.addView(Ui.body(this, theme, getString(res), 14f),
+                LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            row.addView(Ui.button(this, theme,
+                if (prefsStore.titleId == i) getString(R.string.equipped) else getString(R.string.tap_to_equip)) {
+                prefsStore.titleId = i
+                audio.tap()
+                showProfile()
+            })
+            c.addView(row)
+        }
+
+        c.addView(Ui.spacer(this, 10f))
+        c.addView(Ui.button(this, theme, getString(R.string.back), primary = true) {
+            audio.tap(); showMenu()
+        })
+        openOverlay(scrollCard(c))
+    }
+
+    // ---------------------------------------------------------------- spectator
+    private fun startSpectator() {
+        val seats = IntArray(4) { 1 }
+        val profs = arrayOf(
+            AiProfile.TACTICAL, AiProfile.AGGRESSIVE, AiProfile.DEFENSIVE, AiProfile.ADAPTIVE
+        )
+        closeOverlay()
+        startMatch(seats, profs, prefsStore.customRules.takeIf { prefsStore.presetId == "custom" }
+            ?: RuleSet.CLASSIC, spectator = true)
+    }
+
+
 
     private fun dayIndex(): Long = System.currentTimeMillis() / 86_400_000L
 
@@ -465,9 +652,9 @@ class MainActivity : Activity() {
         }
     )
 
-    fun startMatch(seats: IntArray, profiles: Array<AiProfile>, rules: RuleSet) {
+    fun startMatch(seats: IntArray, profiles: Array<AiProfile>, rules: RuleSet, spectator: Boolean = false) {
         session?.destroy()
-        val s = Session(this, rules, seats, profiles, System.nanoTime())
+        val s = Session(this, rules, seats, profiles, System.nanoTime(), spectator)
         session = s
         s.view = game
         game.stopAnimations()
@@ -479,6 +666,7 @@ class MainActivity : Activity() {
             token = { s.onTokenTap(it) }
         )
         s.start()
+        audio.switchTrack(1)
         game.invalidate()
     }
 
@@ -531,6 +719,16 @@ class MainActivity : Activity() {
             closeOverlay()
             showMenu()
         })
+        c.addView(Ui.spacer(this, 8f))
+        val emoteRow = Ui.row(this)
+        val emotes = intArrayOf(R.string.emote_nice, R.string.emote_oops, R.string.emote_go, R.string.emote_well)
+        for (res in emotes) {
+            val b = Ui.button(this, theme, getString(res)) { session?.emote(getString(res)) }
+            val lp = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            lp.rightMargin = Ui.dp(this, 6f)
+            emoteRow.addView(b, lp)
+        }
+        c.addView(emoteRow)
         c.addView(Ui.spacer(this, 8f))
         c.addView(Ui.button(this, theme, getString(R.string.replay_log)) { audio.tap(); showLog() })
         openOverlay(scrollCard(c), dismissible = false)

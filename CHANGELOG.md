@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.2 (beta)
+
+New
+- Coin shop: unlock themes, board skins and token styles with coins earned in play.
+- Profile studio: 6 avatars and 6 titles, equipped from the home screen.
+- Emote wheel during a match (4 quick-chats) plus occasional bot reactions.
+- Spectator mode: watch four different bots fight it out from the front row.
+- Streak shields: one shield protects a day streak that would otherwise break.
+- Two HD music beds (menu + in-match) that switch with the screen.
+- Four procedural board textures (walnut, marble, neon grid, paper).
+- A complete hand-drawn icon set (23 glyphs) replacing text-only buttons.
+
+Changed
+- Home screen rebuilt as an icon-card grid with a profile strip.
+- Release APK is ~6.8 MB (was 825 KB) because of the real music and textures.
+
+
 ## 1.1 (beta) — first public build
 
 ### Engine

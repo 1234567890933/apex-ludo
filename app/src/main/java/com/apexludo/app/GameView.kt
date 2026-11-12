@@ -36,7 +36,7 @@ class GameView(ctx: Context) : View(ctx) {
     var theme: Theme = Themes.NIGHT
         set(v) { field = v; invalidate() }
     var boardSkin: BoardSkin = BoardSkins.CLASSIC
-        set(v) { field = v; invalidate() }
+        set(v) { field = v; loadTexture(); invalidate() }
     var tokenSkin: TokenSkin = TokenSkins.PAWN
         set(v) { field = v; invalidate() }
 
@@ -56,6 +56,14 @@ class GameView(ctx: Context) : View(ctx) {
     private val cellRects = Array(225) { RectF() }
     private val diceRect = RectF()
     private val pauseRect = RectF()
+    private var emoteRect = RectF()
+    private var emoteOpen = false
+    private val emoteChips = Array(4) { RectF() }
+    private var emoteText: String = ""
+    private var emoteColor: Int = 0
+    private var emoteUntil = 0f
+    private var texture: android.graphics.Bitmap? = null
+    private var textureShader: Shader? = null
     private var topBarH = 0f
     private var bottomBarH = 0f
 
@@ -147,6 +155,15 @@ class GameView(ctx: Context) : View(ctx) {
         diceRect.set(w - pad - dSize, by - dSize / 2f, w - pad, by + dSize / 2f)
         val ps = Ui.dpf(context, 40f)
         pauseRect.set(pad, by - ps / 2f, pad + ps, by + ps / 2f)
+        val es = Ui.dpf(context, 40f)
+        emoteRect.set(w - pad - es, Ui.dpf(context, 14f), w - pad, Ui.dpf(context, 14f) + es)
+        val chipW = (w - pad * 2 - Ui.dpf(context, 24f)) / 4f
+        val chipH = Ui.dpf(context, 38f)
+        val chipTop = h - bottomBarH - chipH - Ui.dpf(context, 8f)
+        for (i in 0 until 4) {
+            val left = pad + i * (chipW + Ui.dpf(context, 8f))
+            emoteChips[i].set(left, chipTop, left + chipW, chipTop + chipH)
+        }
     }
 
     private fun cx(col: Float): Float = boardLeft + (col + 0.5f) * cellSize
@@ -221,6 +238,44 @@ class GameView(ctx: Context) : View(ctx) {
     fun celebrate(colors: IntArray) {
         particles.emitConfetti(width.toFloat(), height.toFloat(), colors, 120)
         confettiUntil = clock + 2.6f
+    }
+
+    /** Loads the board texture for the current skin (procedural art, bundled). */
+    private fun loadTexture() {
+        val res = when (boardSkin.id) {
+            "wood" -> R.drawable.tex_wood
+            "marble" -> R.drawable.tex_marble
+            "neon" -> R.drawable.tex_neon
+            else -> 0
+        }
+        if (res == 0) {
+            textureShader = null
+            texture?.recycle()
+            texture = null
+            return
+        }
+        try {
+            val bmp = android.graphics.BitmapFactory.decodeResource(resources, res)
+            if (bmp != null) {
+                texture?.recycle()
+                texture = bmp
+                val sh = android.graphics.BitmapShader(bmp, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+                val m = android.graphics.Matrix()
+                val scale = boardSize / bmp.width
+                m.setScale(if (scale > 0f) scale else 1f, if (scale > 0f) scale else 1f)
+                sh.setLocalMatrix(m)
+                textureShader = sh
+            }
+        } catch (t: Throwable) {
+            textureShader = null
+        }
+    }
+
+    fun showEmote(text: String, colorIndex: Int) {
+        emoteText = text
+        emoteColor = theme.playerColors[colorIndex % theme.playerColors.size]
+        emoteUntil = clock + 2.4f
+        invalidate()
     }
 
     fun pulseAt(x: Float, y: Float, color: Int) {
@@ -305,6 +360,25 @@ class GameView(ctx: Context) : View(ctx) {
         drawTopBar(canvas, st)
         drawBottomBar(canvas, st)
 
+        if (emoteUntil > clock && emoteText.isNotEmpty()) {
+            pText.textAlign = Paint.Align.CENTER
+            pText.typeface = tfMedium
+            pText.textSize = Ui.sp(context, 15f)
+            val tw = pText.measureText(emoteText)
+            val bw = tw + Ui.dpf(context, 34f)
+            val bh = Ui.dpf(context, 40f)
+            val bx = boardLeft + boardSize / 2f
+            val by = boardTop + bh * 0.9f
+            val r = RectF(bx - bw / 2, by - bh / 2, bx + bw / 2, by + bh / 2)
+            pFill.color = Ui.withAlpha(theme.panel, 245)
+            canvas.drawRoundRect(r, bh / 2f, bh / 2f, pFill)
+            pStroke.color = Ui.withAlpha(emoteColor, 230)
+            pStroke.strokeWidth = Ui.dpf(context, 1.6f)
+            canvas.drawRoundRect(r, bh / 2f, bh / 2f, pStroke)
+            pText.color = theme.text
+            canvas.drawText(emoteText, bx, by + pText.textSize * 0.36f, pText)
+        }
+
         if (showPerf) drawPerf(canvas)
 
         val animating = tokenAnim != null || diceAnim != null ||
@@ -330,8 +404,17 @@ class GameView(ctx: Context) : View(ctx) {
         val plate = RectF(boardLeft - cellSize * 0.25f, boardTop - cellSize * 0.25f,
             boardLeft + boardSize + cellSize * 0.25f, boardTop + boardSize + cellSize * 0.25f)
         canvas.drawRoundRect(plate, radius * 1.6f, radius * 1.6f, pShadow)
-        pFill.color = theme.boardBase
-        canvas.drawRoundRect(plate, radius * 1.6f, radius * 1.6f, pFill)
+        val tex = textureShader
+        if (tex != null) {
+            pFill.shader = tex
+            canvas.drawRoundRect(plate, radius * 1.6f, radius * 1.6f, pFill)
+            pFill.shader = null
+            pFill.color = Ui.withAlpha(theme.boardBase, 120)
+            canvas.drawRoundRect(plate, radius * 1.6f, radius * 1.6f, pFill)
+        } else {
+            pFill.color = theme.boardBase
+            canvas.drawRoundRect(plate, radius * 1.6f, radius * 1.6f, pFill)
+        }
         pStroke.color = theme.boardEdge
         pStroke.strokeWidth = Ui.dpf(context, 1.4f)
         canvas.drawRoundRect(plate, radius * 1.6f, radius * 1.6f, pStroke)
@@ -686,6 +769,33 @@ class GameView(ctx: Context) : View(ctx) {
             canvas.drawRoundRect(fillR, barR.height() / 2f, barR.height() / 2f, pFill)
         }
 
+        // quick-chat button (top right)
+        pFill.color = Ui.withAlpha(theme.panel, 235)
+        canvas.drawRoundRect(emoteRect, emoteRect.height() * 0.3f, emoteRect.height() * 0.3f, pFill)
+        pStroke.color = Ui.withAlpha(theme.panelEdge, 220)
+        pStroke.strokeWidth = Ui.dpf(context, 1.2f)
+        canvas.drawRoundRect(emoteRect, emoteRect.height() * 0.3f, emoteRect.height() * 0.3f, pStroke)
+        Icons.draw(canvas, Icons.CHAT, emoteRect.centerX(), emoteRect.centerY(),
+            emoteRect.width() * 0.58f, theme.text, pFill, pStroke, path)
+
+        if (emoteOpen) {
+            val labels = arrayOf(R.string.emote_nice, R.string.emote_oops, R.string.emote_go, R.string.emote_well)
+            for (i in 0 until 4) {
+                val r = emoteChips[i]
+                pFill.color = Ui.withAlpha(theme.panel, 245)
+                canvas.drawRoundRect(r, r.height() / 2f, r.height() / 2f, pFill)
+                pStroke.color = Ui.withAlpha(theme.accent, 200)
+                pStroke.strokeWidth = Ui.dpf(context, 1.3f)
+                canvas.drawRoundRect(r, r.height() / 2f, r.height() / 2f, pStroke)
+                pText.color = theme.text
+                pText.textAlign = Paint.Align.CENTER
+                pText.typeface = tfMedium
+                pText.textSize = Ui.sp(context, 12f)
+                canvas.drawText(context.getString(labels[i]), r.centerX(),
+                    r.centerY() + pText.textSize * 0.36f, pText)
+            }
+        }
+
         // pause button
         pFill.color = Ui.withAlpha(theme.panel, 235)
         canvas.drawRoundRect(pauseRect, pauseRect.height() * 0.3f, pauseRect.height() * 0.3f, pFill)
@@ -788,6 +898,24 @@ class GameView(ctx: Context) : View(ctx) {
                 if (pauseRect.contains(x, y)) {
                     onPauseTap?.invoke()
                     return true
+                }
+                if (emoteRect.contains(x, y)) {
+                    emoteOpen = !emoteOpen
+                    invalidate()
+                    return true
+                }
+                if (emoteOpen) {
+                    for (i in 0 until 4) {
+                        if (emoteChips[i].contains(x, y)) {
+                            emoteOpen = false
+                            val labels = intArrayOf(R.string.emote_nice, R.string.emote_oops,
+                                R.string.emote_go, R.string.emote_well)
+                            s.emote(context.getString(labels[i]))
+                            invalidate()
+                            return true
+                        }
+                    }
+                    emoteOpen = false
                 }
                 if (diceRect.contains(x, y) || isNearDice(x, y)) {
                     onDiceTap?.invoke()

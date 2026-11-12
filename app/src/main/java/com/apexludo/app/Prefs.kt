@@ -170,6 +170,40 @@ class Prefs(ctx: Context) {
             .putBoolean("r_battle", v.battleMode)
             .apply()
 
+    // ---- cosmetics and unlocks (all local, nothing to buy with real money)
+    private val freeItems = setOf(
+        "theme:day", "theme:night", "theme:contrast",
+        "board:classic", "token:pawn", "avatar:crown"
+    )
+
+    var owned: MutableSet<String>
+        get() = HashSet(sp.getStringSet("owned", freeItems) ?: freeItems)
+        set(v) = sp.edit().putStringSet("owned", HashSet(v + freeItems)).apply()
+
+    fun owns(id: String): Boolean = owned.contains(id) || freeItems.contains(id)
+
+    fun unlock(id: String) {
+        val set = owned
+        set.add(id)
+        owned = set
+    }
+
+    var avatarId: String
+        get() = sp.getString("avatar", "crown") ?: "crown"
+        set(v) = sp.edit().putString("avatar", v).apply()
+
+    var titleId: Int
+        get() = sp.getInt("title", 0)
+        set(v) = sp.edit().putInt("title", v).apply()
+
+    var shields: Int
+        get() = sp.getInt("shields", 1)
+        set(v) = sp.edit().putInt("shields", v.coerceAtLeast(0)).apply()
+
+    var watchSpeed: Int
+        get() = sp.getInt("watch_speed", 1)
+        set(v) = sp.edit().putInt("watch_speed", v.coerceIn(0, 2)).apply()
+
     var presetId: String
         get() = sp.getString("preset", "classic") ?: "classic"
         set(v) = sp.edit().putString("preset", v).apply()

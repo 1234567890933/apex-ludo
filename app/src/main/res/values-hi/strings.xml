@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">एपेक्स लूडो</string>
     <string name="tagline">दौड़ो. काटो. जीतो.</string>
-    <string name="version_label">v1.1 (बीटा)</string>
+    <string name="version_label">v1.2 (बीटा)</string>
 
     <string name="play_quick">तुरंत मैच</string>
     <string name="play_pass">एक ही फ़ोन पर खेलें</string>
@@ -188,4 +188,40 @@
     <string name="crash_saved">क्रैश रिपोर्ट ऐप स्टोरेज में सेव हुई</string>
     <string name="afk_on">%1$s अब ऑटो-पायलट पर</string>
     <string name="afk_off">%1$s फिर आपके नियंत्रण में</string>
+
+    <string name="watch_bots">बॉट्स को देखें</string>
+    <string name="spectator">दर्शक</string>
+    <string name="speed">गति</string>
+    <string name="shop_title">दुकान</string>
+    <string name="shop_owned">आपका</string>
+    <string name="shop_buy">खरीदें</string>
+    <string name="shop_not_enough">सिक्के कम हैं</string>
+    <string name="shop_bought">%1$s अनलॉक हो गया</string>
+    <string name="shop_locked">लॉक</string>
+    <string name="profile_title">प्रोफ़ाइल</string>
+    <string name="avatar_label">अवतार</string>
+    <string name="title_label">उपाधि</string>
+    <string name="equipped">लगा हुआ</string>
+    <string name="streak_shield">स्ट्रीक शील्ड</string>
+    <string name="shield_desc">एक दिन छूटने पर भी आपकी लय बनी रहती है।</string>
+    <string name="emote_nice">वाह!</string>
+    <string name="emote_oops">अरे नहीं!</string>
+    <string name="emote_go">चलो चलो!</string>
+    <string name="emote_well">बढ़िया खेल</string>
+    <string name="av_crown">ताज</string>
+    <string name="av_rocket">रॉकेट</string>
+    <string name="av_cat">बिल्ली</string>
+    <string name="av_robot">रोबोट</string>
+    <string name="av_star">सितारा</string>
+    <string name="av_shield">रक्षक</string>
+    <string name="title_rookie">नौसिखिया</string>
+    <string name="title_captain">कप्तान</string>
+    <string name="title_sniper">निशानेबाज़</string>
+    <string name="title_blocker">रोकने वाला</string>
+    <string name="title_lucky">लकी सिक्स</string>
+    <string name="title_apex">एपेक्स लेजेंड</string>
+    <string name="tap_to_equip">लगाने के लिए टैप करें</string>
+    <string name="quick_sub">1 इंसान · 3 बॉट</string>
+    <string name="pass_sub">2-4 खिलाड़ी, एक फ़ोन</string>
+    <string name="watch_sub">चार बॉट, आगे की सीट</string>
 </resources>

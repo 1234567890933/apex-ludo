@@ -1,6 +1,8 @@
 package com.apexludo.app
 
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
@@ -10,6 +12,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.SeekBar
@@ -239,4 +242,93 @@ object Ui {
         val b = (Color.blue(color) * (1f - amount)).toInt().coerceIn(0, 255)
         return Color.rgb(r, g, b)
     }
+
+    fun glyph(ctx: Context, kind: Int, color: Int, sizeDp: Float): GlyphView =
+        GlyphView(ctx, kind, color, sizeDp)
+
+    /** Big tappable card: icon + title + optional subtitle. Used by the home grid. */
+    fun iconCard(
+        ctx: Context,
+        theme: Theme,
+        icon: Int,
+        title: String,
+        subtitle: String?,
+        accent: Int,
+        onClick: () -> Unit
+    ): LinearLayout {
+        val card = LinearLayout(ctx)
+        card.orientation = LinearLayout.HORIZONTAL
+        card.gravity = Gravity.CENTER_VERTICAL
+        val pad = dp(ctx, 12f)
+        card.setPadding(pad, pad, pad, pad)
+        card.background = ripple(withAlpha(theme.cellFill, 255), withAlpha(accent, 120),
+            dpf(ctx, 14f), withAlpha(accent, 60), dp(ctx, 1.2f))
+        card.isClickable = true
+        card.isFocusable = true
+
+        val disc = FrameLayout(ctx)
+        val dSize = dp(ctx, 40f)
+        disc.background = rounded(withAlpha(accent, 40), withAlpha(accent, 140), dpf(ctx, 12f), dp(ctx, 1f))
+        val gv = glyph(ctx, icon, accent, 22f)
+        disc.addView(gv, FrameLayout.LayoutParams(dSize, dSize).apply { gravity = Gravity.CENTER })
+        val dlp = LinearLayout.LayoutParams(dSize, dSize)
+        dlp.rightMargin = dp(ctx, 10f)
+        card.addView(disc, dlp)
+
+        val col = column(ctx)
+        val t = TextView(ctx)
+        t.text = title
+        t.setTextColor(theme.text)
+        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14.5f)
+        t.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        t.maxLines = 1
+        t.ellipsize = android.text.TextUtils.TruncateAt.END
+        col.addView(t)
+        if (subtitle != null) {
+            val st = TextView(ctx)
+            st.text = subtitle
+            st.setTextColor(theme.textDim)
+            st.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11.5f)
+            st.maxLines = 1
+            st.ellipsize = android.text.TextUtils.TruncateAt.END
+            col.addView(st)
+        }
+        card.addView(col, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+
+        card.setOnClickListener {
+            it.animate().scaleX(0.97f).scaleY(0.97f).setDuration(70).withEndAction {
+                it.animate().scaleX(1f).scaleY(1f).setDuration(90).start()
+            }.start()
+            onClick()
+        }
+        return card
+    }
 }
+
+/** A single vector glyph, drawn by [Icons]. */
+class GlyphView(
+    ctx: Context,
+    private val kind: Int,
+    private val color: Int,
+    sizeDp: Float
+) : View(ctx) {
+
+    private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val stroke = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val path = android.graphics.Path()
+    private val px = Ui.dpf(ctx, sizeDp)
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val size = px.toInt()
+        setMeasuredDimension(
+            resolveSize(size, widthMeasureSpec),
+            resolveSize(size, heightMeasureSpec)
+        )
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        Icons.draw(canvas, kind, width / 2f, height / 2f, minOf(width, height) * 0.72f,
+            color, fill, stroke, path)
+    }
+}
+

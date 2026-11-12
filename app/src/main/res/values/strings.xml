@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Apex Ludo</string>
     <string name="tagline">Race. Capture. Conquer.</string>
-    <string name="version_label">v1.1 (beta)</string>
+    <string name="version_label">v1.2 (beta)</string>
 
     <!-- Home -->
     <string name="play_quick">Quick Match</string>
@@ -199,4 +199,41 @@
     <string name="crash_saved">A crash report was saved to app storage</string>
     <string name="afk_on">%1$s is now on auto-pilot</string>
     <string name="afk_off">%1$s is back in control</string>
+
+    <!-- v1.2 additions -->
+    <string name="watch_bots">Watch Bots</string>
+    <string name="spectator">Spectator</string>
+    <string name="speed">Speed</string>
+    <string name="shop_title">Shop</string>
+    <string name="shop_owned">Owned</string>
+    <string name="shop_buy">Buy</string>
+    <string name="shop_not_enough">Not enough coins</string>
+    <string name="shop_bought">%1$s unlocked</string>
+    <string name="shop_locked">Locked</string>
+    <string name="profile_title">Profile</string>
+    <string name="avatar_label">Avatar</string>
+    <string name="title_label">Title</string>
+    <string name="equipped">Equipped</string>
+    <string name="streak_shield">Streak shield</string>
+    <string name="shield_desc">Keeps your day streak alive if you miss a day.</string>
+    <string name="emote_nice">Nice!</string>
+    <string name="emote_oops">Oops!</string>
+    <string name="emote_go">Go go!</string>
+    <string name="emote_well">Well played</string>
+    <string name="av_crown">Crown</string>
+    <string name="av_rocket">Rocket</string>
+    <string name="av_cat">Cat</string>
+    <string name="av_robot">Robot</string>
+    <string name="av_star">Star</string>
+    <string name="av_shield">Guardian</string>
+    <string name="title_rookie">Rookie</string>
+    <string name="title_captain">Captain</string>
+    <string name="title_sniper">Sniper</string>
+    <string name="title_blocker">Blocker</string>
+    <string name="title_lucky">Lucky Six</string>
+    <string name="title_apex">Apex Legend</string>
+    <string name="tap_to_equip">Tap to equip</string>
+    <string name="quick_sub">1 human · 3 bots</string>
+    <string name="pass_sub">2-4 players, one phone</string>
+    <string name="watch_sub">Four bots, front-row seat</string>
 </resources>
